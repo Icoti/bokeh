@@ -10,6 +10,9 @@ const ESMap = globalThis.Map
 type ESSet<V> = globalThis.Set<V>
 const ESSet = globalThis.Set
 
+type DOMNode = globalThis.Node
+const DOMNode = globalThis.Node
+
 const {hasOwnProperty} = Object.prototype
 
 export abstract class Kind<T> {
@@ -569,13 +572,13 @@ export namespace Kinds {
     }
   }
 
-  export class DOMNode extends Kind<Node> {
-    valid(value: unknown): value is Node {
-      return value instanceof Node
+  export class Node extends Kind<DOMNode> {
+    valid(value: unknown): value is DOMNode {
+      return value instanceof DOMNode
     }
 
     override toString(): string {
-      return "DOMNode"
+      return "Node"
     }
 
     may_have_refs(): boolean {
@@ -608,7 +611,7 @@ export const Enum = <T extends string | number>(...values: T[]) => new Kinds.Enu
 export const Ref = <ObjType extends object>(obj_type: Constructor<ObjType>) => new Kinds.Ref<ObjType>(obj_type)
 export const AnyRef = <ObjType extends object>() => new Kinds.AnyRef<ObjType>()
 export const Function = <Args extends unknown[], Ret>() => new Kinds.Function<Args, Ret>()
-export const DOMNode = new Kinds.DOMNode()
+export const Node = new Kinds.Node()
 
 export const NonNegative = <BaseType extends number>(base_type: Kind<BaseType>) => new Kinds.NonNegative(base_type)
 export const Positive = <BaseType extends number>(base_type: Kind<BaseType>) => new Kinds.Positive(base_type)
