@@ -14,8 +14,8 @@ import type {PanEvent, PinchEvent, Pannable, Pinchable, MoveEvent, Moveable, Key
 import {Signal} from "core/signaling"
 import type {Rect} from "core/types"
 import {assert} from "core/util/assert"
-import {Enum, Number, Nullable, Ref, Or} from "../../core/kinds"
 import {BorderRadius} from "../common/kinds"
+import * as Box from "../common/box_kinds"
 import {round_rect} from "../common/painting"
 import * as resolve from "../common/resolve"
 import {Node} from "../coordinates/node"
@@ -23,19 +23,6 @@ import {Node} from "../coordinates/node"
 export const EDGE_TOLERANCE = 2.5
 
 const {abs} = Math
-
-type Corner = "top_left" | "top_right" | "bottom_left" | "bottom_right"
-type Edge = "left" | "right" | "top" | "bottom"
-type HitTarget = Corner | Edge | "area"
-
-const Resizable = Enum("none", "left", "right", "top", "bottom", "x", "y", "all")
-type Resizable = typeof Resizable["__type__"]
-
-const Movable = Enum("none", "x", "y", "both")
-type Movable = typeof Movable["__type__"]
-
-const Limit = Nullable(Or(Number, Ref(Node)))
-type Limit = typeof Limit["__type__"]
 
 export class BoxAnnotationView extends AnnotationView implements Pannable, Pinchable, Moveable, AutoRanged {
   declare model: BoxAnnotation
@@ -178,7 +165,7 @@ export class BoxAnnotationView extends AnnotationView implements Pannable, Pinch
     return bbox.contains(sx, sy)
   }
 
-  private _hit_test(sx: number, sy: number): HitTarget | null {
+  private _hit_test(sx: number, sy: number): Box.HitTarget | null {
     const {left, right, bottom, top} = this.bbox
     const tolerance = Math.max(EDGE_TOLERANCE, this.model.line_width/2)
 
@@ -226,7 +213,7 @@ export class BoxAnnotationView extends AnnotationView implements Pannable, Pinch
     }
   }
 
-  private _can_hit(target: HitTarget): boolean {
+  private _can_hit(target: Box.HitTarget): boolean {
     const {left, right, top, bottom} = this.resizable
     switch (target) {
       case "top_left":     return top && left
@@ -241,7 +228,7 @@ export class BoxAnnotationView extends AnnotationView implements Pannable, Pinch
     }
   }
 
-  private _pan_state: {bbox: BBox, target: HitTarget} | null = null
+  private _pan_state: {bbox: BBox, target: Box.HitTarget} | null = null
 
   _pan_start(ev: PanEvent): boolean {
     if (this.model.visible && this.model.editable) {
@@ -506,16 +493,16 @@ export namespace BoxAnnotation {
     left_units: p.Property<CoordinateUnits>
     right_units: p.Property<CoordinateUnits>
 
-    top_limit: p.Property<Limit>
-    bottom_limit: p.Property<Limit>
-    left_limit: p.Property<Limit>
-    right_limit: p.Property<Limit>
+    top_limit: p.Property<Box.Limit>
+    bottom_limit: p.Property<Box.Limit>
+    left_limit: p.Property<Box.Limit>
+    right_limit: p.Property<Box.Limit>
 
     border_radius: p.Property<BorderRadius>
 
     editable: p.Property<boolean>
-    resizable: p.Property<Resizable>
-    movable: p.Property<Movable>
+    resizable: p.Property<Box.Resizable>
+    movable: p.Property<Box.Movable>
     symmetric: p.Property<boolean>
 
     tl_cursor: p.Property<string>
@@ -574,16 +561,16 @@ export class BoxAnnotation extends Annotation {
       left_units:   [ CoordinateUnits, "data" ],
       right_units:  [ CoordinateUnits, "data" ],
 
-      top_limit:    [ Limit, null ],
-      bottom_limit: [ Limit, null ],
-      left_limit:   [ Limit, null ],
-      right_limit:  [ Limit, null ],
+      top_limit:    [ Box.Limit, null ],
+      bottom_limit: [ Box.Limit, null ],
+      left_limit:   [ Box.Limit, null ],
+      right_limit:  [ Box.Limit, null ],
 
       border_radius: [ BorderRadius, 0 ],
 
       editable:     [ Boolean, false ],
-      resizable:    [ Resizable, "all" ],
-      movable:      [ Movable, "both" ],
+      resizable:    [ Box.Resizable, "all" ],
+      movable:      [ Box.Movable, "both" ],
       symmetric:    [ Boolean, false ],
     }))
 
