@@ -7,11 +7,10 @@ import {DOMComponentView} from "core/dom_view"
 import type {SerializableState} from "core/view"
 import type {StyleSheet, StyleSheetLike} from "core/dom"
 import type {CSSStylesLike} from "core/css"
-import {apply_styles, compose_stylesheet} from "core/css"
+import {apply_styles} from "core/css"
 import {InlineStyleSheet} from "core/dom"
 import {CanvasLayer} from "core/util/canvas"
 import {BBox} from "core/util/bbox"
-import {isString} from "core/util/types"
 import type * as p from "core/properties"
 import ui_css from "styles/ui.css"
 
@@ -47,13 +46,10 @@ export abstract class UIElementView extends DOMComponentView {
 
   protected *_computed_stylesheets(): Iterable<StyleSheet> {
     for (const stylesheet of this.model.stylesheets) {
-      if (isString(stylesheet)) {
-        yield new InlineStyleSheet(stylesheet)
-      } else if (stylesheet instanceof BaseStyleSheet) {
+      if (stylesheet instanceof BaseStyleSheet) {
         yield stylesheet.underlying()
       } else {
-        const css = compose_stylesheet(stylesheet)
-        yield new InlineStyleSheet(css)
+        yield new InlineStyleSheet(stylesheet)
       }
     }
   }

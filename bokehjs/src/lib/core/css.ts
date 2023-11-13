@@ -1223,7 +1223,9 @@ export function apply_styles(declaration: CSSStyleDeclaration, styles: CSSStyles
   }
 }
 
-export function compose_stylesheet(stylesheet: {[key: string]: CSSStylesLike}): string {
+export type CSSStyleSheetDecl = {[key: string]: CSSStylesLike}
+
+export function compose_stylesheet(stylesheet: CSSStyleSheetDecl): string {
   const css = []
 
   for (const [selector, styles] of entries(stylesheet)) {
