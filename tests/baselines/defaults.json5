@@ -6245,6 +6245,7 @@
       type: "symbol",
       name: "unset",
     },
+    pinnable: true,
     collapsible: true,
     minimizable: true,
     maximizable: true,
